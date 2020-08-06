@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.1/css/bootstrap.min.css" integrity="sha384-VCmXjywReHh4PwowAiWNagnWcLhlEJLA5buUprzK8rxFgeH0kww/aWY76TfkUoSX" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.1/js/bootstrap.min.js" integrity="sha384-XEerZL0cuoUbHE4nZReLT7nx9gQrQreJekYhJD9WNWhH8nEW+0c5qq7aIo2Wl30J" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.3/dist/Chart.min.js"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Corona</title>
+</head>
+<body>
+    <header>
+        <!-- Image and text -->
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarTogglerDemo03" aria-controls="navbarTogglerDemo03" aria-expanded="false" aria-label="Toggle navigation">
+              <span class="navbar-toggler-icon"></span>
+            </button>
+            <img src="https://source.unsplash.com/80x80/?corona" alt="" srcset="">
+          
+            <div class="collapse navbar-collapse" id="navbarTogglerDemo03">
+              <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
+                <li class="nav-item active">
+                  <a class="nav-link" >Corona Cases Tracker <span class="sr-only">(current)</span></a>
+                </li>                
+              </ul>
+            </div>
+          </nav>
+    </header>
+    <br>
+    <section style="display: flex;justify-content: center;">
+        <div id="countries">
+            <input type="text" id="country" placeholder="enter country name">
+                <button onclick="dot()">Search</button>
+                </div>
+              </div>
+           
+        </div>
+    </section>
+    <section style="height: 100%;">
+        <canvas id="myChart" width="100%" height="100%"></canvas>
+<script>
+var conf=0,rec=0,deat=0;
+var str;
+var arr=[],date=[];
+str='/daily';
+function dot(){
+    //console.log('inn');
+    str='/countries/';
+    str+=document.getElementById('country').value;
+    //console.log(str);
+    new_start();
+    return false;
+}
+ 
+  async function getData(){
+      //console.log(str);
+    const response=await axios.get('https://covid19.mathdro.id/api'+str);
+    //const {data}=response
+    var len=((response.data).length)
+    for(var i=0; i<len;i+=1){
+    arr.push(response.data[i].confirmed.total);
+    date.push(response.data[i].reportDate);
+    }
+    //console.log(deat);
+    
+     
+}
+async function getData2(){
+      //console.log(str);
+    const response=await axios.get('https://covid19.mathdro.id/api'+str);
+    //const {data}=response
+    const {data:{confirmed,recovered,deaths}}=response
+    conf=confirmed.value
+    rec=recovered.value
+    deat=deaths.value
+    //console.log(deat);
+    
+     
+}
+async function new_start(){
+    await getData2();
+    
+    //str=''+document.getElementById('dropdownMenuButton').innerText;
+   // console.log(str);
+var ctx = document.getElementById('myChart').getContext('2d');
+//console.log(deat)
+
+var myChart = new Chart(ctx, {
+    type: 'bar',
+    data: {
+        labels: ['confirmed_cases','recovered','deaths'],
+        datasets: [{
+            label: 'Data provided by WHO',
+            fill:'False',
+            data: [conf,rec,deat],
+            backgroundColor: [
+             'red',
+             'blue',
+             'green',
+            ],
+            
+           
+            borderColor:[
+            'red',
+            ],
+            borderWidth: 1
+        }]
+    },
+    options: {
+        scales: {
+            yAxes: [{
+                ticks: {
+                    beginAtZero: true
+                }
+            }]
+        }
+    }
+});
+
+}
+async function start(){
+    await getData();
+    
+    //str=''+document.getElementById('dropdownMenuButton').innerText;
+   // console.log(str);
+var ctx = document.getElementById('myChart').getContext('2d');
+//console.log(deat)
+
+var myChart = new Chart(ctx, {
+    type: 'line',
+    data: {
+        labels: date,
+        datasets: [{
+            label: 'Data provided by WHO',
+            fill:'False',
+            data: arr,
+            backgroundColor: 'red',
+            pointBackgroundColor:[
+                'blue',
+
+            ],
+            borderColor:[
+            'red',
+            ],
+            borderWidth: 1
+        }]
+    },
+    options: {
+        scales: {
+            yAxes: [{
+                ticks: {
+                    beginAtZero: true
+                }
+            }]
+        }
+    }
+});}
+start();
+</script>
+    </section>
+
+</body>
+</html>
